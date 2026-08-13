@@ -1,0 +1,70 @@
+{
+  "notices": [
+    {
+      "id": 1,
+      "title": "Midterm Exam Timetable Released",
+      "image": null,
+      "name": "Mrs. Adaeze Okoro",
+      "date": "12-08-2026",
+      "newsText": "The midterm examination timetable for all departments is now available on the student portal. Please confirm your exam venue before your first paper.",
+      "grade": "First Grade",
+      "status": "approved",
+      "dateModified": "2026-08-12T09:15:00.000Z"
+    },
+    {
+      "id": 2,
+      "title": "Inter-House Sports Day — Save the Date",
+      "image": null,
+      "name": "Mr. Tunde Bello",
+      "date": "11-08-2026",
+      "newsText": "This year's Inter-House Sports Day will hold on the main field. Events include track races, tug of war, and a staff-vs-students football match.",
+      "grade": "Second Grade",
+      "status": "approved",
+      "dateModified": "2026-08-11T14:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "title": "Library Extended Hours During Exam Week",
+      "image": null,
+      "name": "Admin Office",
+      "date": "09-08-2026",
+      "newsText": "The main library will stay open until midnight starting next Monday to support exam preparation. Bring your student ID for after-hours access.",
+      "grade": "First Grade",
+      "status": "approved",
+      "dateModified": "2026-08-09T18:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "title": "Cafeteria Closed for Maintenance This Friday",
+      "image": null,
+      "name": "Facilities Team",
+      "date": "07-08-2026",
+      "newsText": "The main cafeteria will be closed this Friday for equipment servicing. The smaller snack bar near the hostel block will remain open for meals.",
+      "grade": "Second Grade",
+      "status": "approved",
+      "dateModified": "2026-08-07T08:45:00.000Z"
+    },
+    {
+      "id": 5,
+      "title": "Lost Water Bottle — Blue with Stickers",
+      "image": null,
+      "name": "Chinedu Eze",
+      "date": "06-08-2026",
+      "newsText": "Lost a blue water bottle covered in stickers somewhere near the sports field. If found, please drop it at the front office.",
+      "grade": "First Grade",
+      "status": "rejected",
+      "dateModified": "2026-08-06T11:00:00.000Z"
+    },
+    {
+      "id": 6,
+      "title": "Unofficial Bake Sale Announcement",
+      "image": null,
+      "name": "Grace Adamu",
+      "date": "05-08-2026",
+      "newsText": "Selling homemade cookies by the parking lot on Friday, not affiliated with the school. Please buy some!",
+      "grade": "Second Grade",
+      "status": "rejected",
+      "dateModified": "2026-08-05T13:20:00.000Z"
+    }
+  ]
+}
