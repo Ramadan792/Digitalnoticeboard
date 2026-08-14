@@ -1,41 +1,37 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { kv } from '@vercel/kv';
 
-// The seed file that ships with the deployment bundle. On Vercel this path
-// is READ-ONLY at runtime — only /tmp is writable, and /tmp is wiped
-// whenever the function's container recycles (which can be as often as
-// every few minutes of inactivity) and is never shared across concurrent
-// instances or regions.
+// Previously this read/wrote a flat JSON file, which doesn't work reliably
+// on Vercel: the deployed filesystem is read-only except /tmp, and /tmp
+// isn't shared across serverless instances or durable across container
+// recycles — writes (approve/reject/delete/submit) could silently vanish
+// or appear inconsistent depending on which instance handled a request.
 //
-// So: locally (no VERCEL env var), we read/write data/notices.json
-// directly — a real, persistent file. On Vercel, we copy the seed data
-// into /tmp on first read of a given container, then read/write /tmp from
-// then on. This means the API works end-to-end once deployed, but writes
-// (submit/approve/reject/delete) are NOT durable in production — they can
-// vanish whenever Vercel recycles the container, and two people hitting
-// different instances can see different data. See the README for how to
-// swap this for a real database without touching notices.js or [id].js —
-// they only call readNotices()/writeNotices() below.
+// Now everything is stored under one key ("notices") in a real Redis
+// database (Upstash, connected via the Vercel Marketplace — see README).
+// This is the ONLY file that changed to make that swap; notices.js and
+// [id].js still just call readNotices()/writeNotices() and don't know or
+// care what's underneath.
 const SEED_PATH = path.join(process.cwd(), 'data', 'notices.json');
-const WRITABLE_PATH = process.env.VERCEL ? '/tmp/notices.json' : SEED_PATH;
-
-async function ensureWritableFileExists() {
-  if (WRITABLE_PATH === SEED_PATH) return; // local dev: the real file already exists
-  try {
-    await fs.access(WRITABLE_PATH);
-  } catch {
-    const seed = await fs.readFile(SEED_PATH, 'utf-8');
-    await fs.writeFile(WRITABLE_PATH, seed, 'utf-8');
-  }
-}
+const KEY = 'notices';
 
 export async function readNotices() {
-  await ensureWritableFileExists();
-  const raw = await fs.readFile(WRITABLE_PATH, 'utf-8');
-  return JSON.parse(raw).notices;
+  let notices = await kv.get(KEY);
+
+  // First-ever read: the database is empty, so seed it from the bundled
+  // data/notices.json (read-only file, still fine to read from — we're
+  // not writing back to it). Every read after this comes straight from
+  // Redis.
+  if (!notices) {
+    const seedRaw = await fs.readFile(SEED_PATH, 'utf-8');
+    notices = JSON.parse(seedRaw).notices;
+    await kv.set(KEY, notices);
+  }
+
+  return notices;
 }
 
 export async function writeNotices(notices) {
-  await ensureWritableFileExists();
-  await fs.writeFile(WRITABLE_PATH, JSON.stringify({ notices }, null, 2), 'utf-8');
+  await kv.set(KEY, notices);
 }
