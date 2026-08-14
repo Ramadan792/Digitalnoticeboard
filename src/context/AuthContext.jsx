@@ -29,9 +29,17 @@ export function AuthProvider({ children }) {
   // Reading localStorage in the initializer (not an effect) avoids a
   // flash of "signed out" on refresh before rehydration runs.
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : null;
-  });
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (!stored) return null;
+  try {
+    return JSON.parse(stored);
+  } catch {
+    // Corrupted/invalid data from an older version or manual edit —
+    // wipe it instead of crashing the whole app on mount.
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
+  }
+});
 
   const persist = (nextUser) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
