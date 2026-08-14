@@ -45,12 +45,24 @@ export function NewsProvider({ children }) {
     await fetchNews();
   }, [fetchNews]);
 
-  // Shared by Approve/Reject — PATCH just the status field rather than
-  // resending the whole record.
-  const updateStatus = useCallback(async (id, status) => {
+  // Shared by Approve/Reject. Optimistic, same pattern as deleteNews:
+// update the on-screen status immediately rather than waiting on the
+// server round-trip. This matters more than it did for JSON Server —
+// in production, each request can hit a different serverless instance
+// with its own separate /tmp copy of the data (see api/_lib/store.js),
+// so waiting for a fetchNews() after the PATCH can occasionally show
+// stale data even when the write itself succeeded. Updating locally
+// first means the button always visibly does something.
+const updateStatus = useCallback(async (id, status) => {
+  const previous = news;
+  setNews((prev) => prev.map((n) => (n.id === id ? { ...n, status } : n)));
+  try {
     await axios.patch(`${API_URL}/${id}`, { status });
-    await fetchNews();
-  }, [fetchNews]);
+  } catch (err) {
+    setNews(previous); // revert if the server-side update actually failed
+    throw err;
+  }
+}, [news]);
 
   const deleteNews = useCallback(async (id) => {
     // Optimistic: drop it from local state immediately, only a delete
