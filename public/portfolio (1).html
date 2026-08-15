@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Digital Noticeboard — Project Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page-bg:#dce9f5; --surface:#ffffff; --surface-alt:#f4f8fc; --border:#e1e8f0;
+    --text:#1f2937; --text-muted:#7a8699;
+    --blue:#2f7dea; --blue-soft:#e7f0fd; --blue-dark:#1e5bb8;
+    --teal:#0d9488; --teal-soft:#e1f5f2;
+    --pink:#db2777; --pink-soft:#fce8f1;
+    --green:#16a34a; --green-soft:#e7f7ed;
+    --red:#dc2626; --red-soft:#fdeaea;
+    --amber:#d97706; --amber-soft:#fdf1e0;
+    --radius-lg:20px; --radius:12px; --radius-sm:8px;
+    --font-display:'Sora','Segoe UI',sans-serif;
+    --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--page-bg); color:var(--text);
+    font-family:var(--font-body); -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(31,41,55,0.06) 1px, transparent 0);
+    background-size:22px 22px;
+  }
+  h1,h2,h3{font-family:var(--font-display); margin:0;}
+  a{color:inherit;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+
+  /* ---- Nav ---- */
+  .nav{
+    position:sticky; top:0; z-index:40; backdrop-filter:blur(8px);
+    background:rgba(220,233,245,0.85); border-bottom:1px solid var(--border);
+  }
+  .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:14px 24px; max-width:1080px; margin:0 auto;}
+  .nav-brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:700; font-size:15px;}
+  .pin-dot{width:9px; height:9px; border-radius:50%; background:var(--blue); box-shadow:0 0 0 3px var(--blue-soft);}
+  .nav-links{display:flex; gap:22px; font-size:13.5px; font-weight:600;}
+  .nav-links a{text-decoration:none; color:var(--text-muted); transition:color .15s;}
+  .nav-links a:hover{color:var(--blue);}
+  .nav-cta{
+    font-size:13px; font-weight:700; background:var(--blue); color:#fff; padding:9px 16px;
+    border-radius:999px; text-decoration:none; white-space:nowrap;
+  }
+  @media (max-width:720px){ .nav-links{display:none;} }
+
+  /* ---- Hero ---- */
+  .hero{padding:76px 0 60px;}
+  .hero-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center;}
+  @media (max-width:840px){ .hero-grid{grid-template-columns:1fr;} }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--blue-dark);
+    background:var(--blue-soft); padding:6px 12px; border-radius:999px; margin-bottom:18px;
+  }
+  .hero h1{font-size:46px; line-height:1.08; font-weight:800; letter-spacing:-0.01em;}
+  .hero p.lede{font-size:17px; line-height:1.6; color:var(--text-muted); margin-top:16px; max-width:46ch;}
+  .cta-row{display:flex; gap:12px; margin-top:28px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--font-body); font-weight:700; font-size:14px; padding:12px 20px;
+    border-radius:var(--radius-sm); text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    border:1px solid transparent; transition:transform .12s ease;
+  }
+  .btn:hover{transform:translateY(-1px);}
+  .btn-primary{background:var(--blue); color:#fff;}
+  .btn-secondary{background:var(--surface); color:var(--text); border-color:var(--border);}
+
+  /* ---- Pinned note visual (signature element) ---- */
+  .board{position:relative; height:340px;}
+  .note{
+    position:absolute; width:250px; background:var(--surface); border-radius:4px;
+    box-shadow:0 14px 30px -10px rgba(31,41,55,0.28); padding:18px 18px 16px;
+    border:1px solid var(--border);
+  }
+  .note::before{
+    content:""; position:absolute; top:-9px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:26px; height:14px; background:rgba(217,119,6,0.5); border-radius:2px;
+  }
+  .note-1{top:6px; left:20px; transform:rotate(-6deg); z-index:2;}
+  .note-2{top:96px; left:150px; transform:rotate(4deg); z-index:3;}
+  .note-3{top:206px; left:10px; transform:rotate(3deg); z-index:1;}
+  .note-title{font-family:var(--font-display); font-weight:700; font-size:14px; margin-bottom:6px;}
+  .note-body{font-size:11.5px; color:var(--text-muted); line-height:1.5;}
+  .pill{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; margin-top:10px;}
+  .pill-green{background:var(--green-soft); color:var(--green);}
+  .pill-amber{background:var(--amber-soft); color:var(--amber);}
+  .pill-pink{background:var(--pink-soft); color:var(--pink);}
+
+  /* ---- Sections ---- */
+  section{padding:56px 0;}
+  .section-head{margin-bottom:32px;}
+  .section-head .eyebrow{margin-bottom:12px;}
+  .section-head h2{font-size:28px; font-weight:700;}
+  .section-head p{color:var(--text-muted); margin-top:10px; font-size:15px; max-width:60ch;}
+
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px;}
+
+  .roles-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:720px){ .roles-grid{grid-template-columns:1fr;} }
+  .role-card{border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); background:var(--surface);}
+  .role-head{padding:16px 20px; font-family:var(--font-display); font-weight:700; color:#fff; font-size:15px;}
+  .role-head.student{background:var(--teal);}
+  .role-head.admin{background:var(--pink);}
+  .role-body{padding:18px 20px;}
+  .role-body ul{margin:0; padding:0; list-style:none;}
+  .role-body li{position:relative; padding-left:18px; font-size:13.5px; color:var(--text); margin-bottom:10px; line-height:1.5;}
+  .role-body li::before{content:""; position:absolute; left:0; top:6px; width:6px; height:6px; border-radius:50%; background:var(--blue);}
+
+  .tech-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
+  @media (max-width:780px){ .tech-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .tech-grid{grid-template-columns:1fr;} }
+  .tech-card{border-radius:var(--radius); border:1px solid var(--border); background:var(--surface); overflow:hidden;}
+  .tech-bar{height:4px;}
+  .tech-body{padding:16px 18px;}
+  .tech-body h3{font-size:14px; margin-bottom:6px;}
+  .tech-body p{font-size:12.5px; color:var(--text-muted); margin:0; line-height:1.5;}
+
+  .creds-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:780px){ .creds-grid{grid-template-columns:1fr;} }
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{text-align:left; font-size:10.5px; letter-spacing:.04em; text-transform:uppercase; color:var(--text-muted); padding-bottom:8px; border-bottom:1px solid var(--border);}
+  td{padding:9px 0; border-bottom:1px solid var(--surface-alt);}
+  td.mono{font-family:'SFMono-Regular',Consolas,monospace; font-weight:700; font-size:12.5px;}
+  .access-view{color:var(--green); font-weight:600;}
+  .access-full{color:var(--red); font-weight:600;}
+  .creds-note{font-size:12px; color:var(--text-muted); margin-top:12px; line-height:1.5;}
+  .pw-chip{display:inline-block; font-family:'SFMono-Regular',Consolas,monospace; font-weight:700; background:var(--blue-soft); color:var(--blue-dark); padding:3px 10px; border-radius:6px; font-size:12.5px;}
+
+  .palette-row{display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:28px;}
+  @media (max-width:720px){ .palette-row{grid-template-columns:repeat(3,1fr);} }
+  .swatch{border-radius:var(--radius-sm); height:70px; margin-bottom:6px; border:1px solid rgba(0,0,0,0.05);}
+  .swatch-label{font-size:11px; color:var(--text-muted);}
+  .swatch-hex{font-size:10.5px; font-family:'SFMono-Regular',Consolas,monospace; color:var(--text);}
+
+  .type-row{display:flex; gap:40px; flex-wrap:wrap;}
+  .type-sample .label{font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;}
+  .type-sample .display{font-family:var(--font-display); font-size:26px; font-weight:700;}
+  .type-sample .body{font-family:var(--font-body); font-size:15px;}
+
+  .links-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .link-card{
+    flex:1; min-width:220px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px 20px; text-decoration:none; color:var(--text); transition:border-color .15s, transform .12s;
+  }
+  .link-card:hover{border-color:var(--blue); transform:translateY(-2px);}
+  .link-card .k{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:6px;}
+  .link-card .v{font-family:var(--font-display); font-weight:700; font-size:15px;}
+
+  footer{padding:36px 0 60px; text-align:center; color:var(--text-muted); font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand"><span class="pin-dot"></span>Digital Noticeboard</div>
+    <div class="nav-links">
+      <a href="#overview">Overview</a>
+      <a href="#roles">Roles</a>
+      <a href="#tech">Tech</a>
+      <a href="#try-it">Try it</a>
+      <a href="#design">Design</a>
+    </div>
+    <a class="nav-cta" href="https://digitalnoticeboard-one.vercel.app" target="_blank" rel="noopener">Visit live site</a>
+  </div>
+</nav>
+
+<div class="wrap hero">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">School project · Full-stack web app</span>
+      <h1>A physical notice board, rebuilt for the browser.</h1>
+      <p class="lede">Students submit announcements, admins review them, and only approved notices ever reach the public feed. Built with React, Express, and Redis — deployed live on Vercel.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://digitalnoticeboard-one.vercel.app" target="_blank" rel="noopener">Visit live site →</a>
+        <a class="btn btn-secondary" href="https://github.com/Ramadan792/Digitalnoticeboard" target="_blank" rel="noopener">View GitHub repo</a>
+      </div>
+    </div>
+    <div class="board">
+      <div class="note note-1">
+        <div class="note-title">School Trip — Friday</div>
+        <div class="note-body">Buses leave at 8am sharp from the main gate. Bring a signed form.</div>
+        <span class="pill pill-green">✓ approved</span>
+      </div>
+      <div class="note note-2">
+        <div class="note-title">Lost: Blue Water Bottle</div>
+        <div class="note-body">Left in the science lab Tuesday. Ask Mrs. Okoro if found.</div>
+        <span class="pill pill-amber">pending</span>
+      </div>
+      <div class="note note-3">
+        <div class="note-title">Chess Club Signup</div>
+        <div class="note-body">New members welcome — meets Thursdays after class.</div>
+        <span class="pill pill-pink">Main Admin</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+<section id="overview">
+  <div class="section-head">
+    <span class="eyebrow">Overview</span>
+    <h2>What it does</h2>
+    <p>One login portal, two kinds of accounts, and a moderation queue in between — so nothing reaches the board without a Main Admin's sign-off.</p>
+  </div>
+  <div class="card">
+    <p style="margin:0 0 14px; font-size:14.5px; line-height:1.7;">
+      Every visitor lands on a single portal and chooses <strong>Student</strong> or <strong>Admin</strong>. Students submit
+      announcements that start out pending. Admins can view every submission, but only the Main Admin can approve, reject,
+      or delete — the other two admins get the same data in a read-only table. Approve, reject, and delete all update the
+      screen instantly, without waiting on a server round-trip, and the whole interface supports light and dark mode.
+    </p>
+  </div>
+</section>
+
+<section id="roles">
+  <div class="section-head">
+    <span class="eyebrow">Roles &amp; permissions</span>
+    <h2>Who can do what</h2>
+  </div>
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="role-head student">Student</div>
+      <div class="role-body">
+        <ul>
+          <li>Signs in with a Student ID only — no password</li>
+          <li>Submits new announcements for review</li>
+          <li>Browses the approved daily news feed</li>
+          <li>Has no access to admin pages</li>
+        </ul>
+      </div>
+    </div>
+    <div class="role-card">
+      <div class="role-head admin">Admin</div>
+      <div class="role-body">
+        <ul>
+          <li>Signs in with a name and shared admin password</li>
+          <li>Mrs. Okoro &amp; Mr. Bello: view-only access to all submissions</li>
+          <li>Main Admin: can also approve, reject, and delete</li>
+          <li>Approve/reject/delete update the screen instantly</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tech">
+  <div class="section-head">
+    <span class="eyebrow">Tech stack</span>
+    <h2>Built with</h2>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tech-bar" style="background:var(--blue)"></div>
+      <div class="tech-body"><h3>Frontend</h3><p>React 18 + Vite, React Router v6 for routing.</p></div></div>
+    <div class="tech-card"><div class="tech-bar" style="background:var(--teal)"></div>
+      <div class="tech-body"><h3>Styling</h3><p>Plain CSS with custom properties — one token set drives both light and dark themes.</p></div></div>
+    <div class="tech-card"><div class="tech-bar" style="background:var(--pink)"></div>
+      <div class="tech-body"><h3>Backend</h3><p>Node.js / Express, deployed as Vercel Serverless Functions.</p></div></div>
+    <div class="tech-card"><div class="tech-bar" style="background:var(--amber)"></div>
+      <div class="tech-body"><h3>Data</h3><p>Redis (Upstash) via @vercel/kv — persists reliably across serverless instances.</p></div></div>
+    <div class="tech-card"><div class="tech-bar" style="background:var(--green)"></div>
+      <div class="tech-body"><h3>Icons</h3><p>lucide-react.</p></div></div>
+    <div class="tech-card"><div class="tech-bar" style="background:var(--blue-dark)"></div>
+      <div class="tech-body"><h3>Hosting</h3><p>Vercel, connected to GitHub for auto-deploy on every push.</p></div></div>
+  </div>
+</section>
+
+<section id="try-it">
+  <div class="section-head">
+    <span class="eyebrow">Try it yourself</span>
+    <h2>Demo login credentials</h2>
+  </div>
+  <div class="creds-grid">
+    <div class="card">
+      <h3 style="font-size:14.5px; margin-bottom:12px;">Student — ID only, no password</h3>
+      <table>
+        <thead><tr><th>Student ID</th><th>Name</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">STU-2024-001</td><td>Chidi Okonkwo</td></tr>
+          <tr><td class="mono">STU-2024-002</td><td>Amaka Nwosu</td></tr>
+          <tr><td class="mono">STU-2024-003</td><td>Emeka Adeleke</td></tr>
+          <tr><td class="mono">STU-2024-004</td><td>Fatima Suleiman</td></tr>
+        </tbody>
+      </table>
+      <p class="creds-note">Any of the four IDs above logs in — students don't need a password.</p>
+    </div>
+    <div class="card">
+      <h3 style="font-size:14.5px; margin-bottom:12px;">Admin — name + shared password</h3>
+      <table>
+        <thead><tr><th>Admin name</th><th>Access</th></tr></thead>
+        <tbody>
+          <tr><td>Mrs. Adaeze Okoro</td><td class="access-view">View only</td></tr>
+          <tr><td>Mr. Tunde Bello</td><td class="access-view">View only</td></tr>
+          <tr><td>Main Admin</td><td class="access-full">Full access</td></tr>
+        </tbody>
+      </table>
+      <p class="creds-note">Shared password for all three: <span class="pw-chip">DigitalNoticeBoard</span></p>
+    </div>
+  </div>
+</section>
+
+<section id="design">
+  <div class="section-head">
+    <span class="eyebrow">Design system</span>
+    <h2>Palette &amp; typography</h2>
+  </div>
+  <div class="palette-row">
+    <div><div class="swatch" style="background:var(--blue)"></div><div class="swatch-label">Primary blue</div><div class="swatch-hex">#2F7DEA</div></div>
+    <div><div class="swatch" style="background:var(--teal)"></div><div class="swatch-label">Teal accent</div><div class="swatch-hex">#0D9488</div></div>
+    <div><div class="swatch" style="background:var(--pink)"></div><div class="swatch-label">Pink accent</div><div class="swatch-hex">#DB2777</div></div>
+    <div><div class="swatch" style="background:var(--green)"></div><div class="swatch-label">Success green</div><div class="swatch-hex">#16A34A</div></div>
+    <div><div class="swatch" style="background:var(--red)"></div><div class="swatch-label">Danger red</div><div class="swatch-hex">#DC2626</div></div>
+    <div><div class="swatch" style="background:var(--amber)"></div><div class="swatch-label">Warning amber</div><div class="swatch-hex">#D97706</div></div>
+  </div>
+  <div class="card">
+    <div class="type-row">
+      <div class="type-sample"><div class="label">Display — Sora</div><div class="display">Digital Noticeboard</div></div>
+      <div class="type-sample"><div class="label">Body — Inter</div><div class="body">Submissions are reviewed before appearing on Daily News.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="links">
+  <div class="section-head">
+    <span class="eyebrow">Project links</span>
+    <h2>Everything in one place</h2>
+  </div>
+  <div class="links-row">
+    <a class="link-card" href="https://digitalnoticeboard-one.vercel.app" target="_blank" rel="noopener">
+      <div class="k">Live site</div><div class="v">digitalnoticeboard-one.vercel.app</div>
+    </a>
+    <a class="link-card" href="https://github.com/Ramadan792/Digitalnoticeboard" target="_blank" rel="noopener">
+      <div class="k">Source code</div><div class="v">GitHub repository</div>
+    </a>
+    <a class="link-card" href="/docs/digital-noticeboard-documentation.pdf" target="_blank" rel="noopener">
+      <div class="k">Full documentation</div><div class="v">Project docs (PDF)</div>
+    </a>
+    <a class="link-card" href="/docs/digital-noticeboard-color-palette.pdf" target="_blank" rel="noopener">
+      <div class="k">Design reference</div><div class="v">Color palette (PDF)</div>
+    </a>
+    <a class="link-card" href="https://www.figma.com/design/ZS8rm6ZTbur3jp5Z7xHBou/Untitled?node-id=0-1" target="_blank" rel="noopener">
+      <div class="k">UI/UX design</div><div class="v">Figma file</div>
+    </a>
+  </div>
+</section>
+</div>
+
+<footer>Digital Noticeboard — student/admin bulletin board, built with React, Express &amp; Redis.</footer>
+
+</body>
+</html>
